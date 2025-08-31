@@ -1,6 +1,8 @@
-# React Router Template 2025
+# FE Challenge
 
-A modern React Router v7 application template with TypeScript, TailwindCSS, and comprehensive development tooling.
+
+## 📁 Files Structure:
+ - solution is isolated under **`/app/challenge`** folder
 
 ## 🚀 Tech Stack
 
@@ -10,20 +12,11 @@ A modern React Router v7 application template with TypeScript, TailwindCSS, and 
 - **UI Components**: [Radix UI](https://www.radix-ui.com/) - Unstyled, accessible components
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand) - Lightweight state management
 - **Data Fetching**: [TanStack Query](https://tanstack.com/query) - Powerful data synchronization
+- **Virtualization**: [@tanstack/react-virtual](https://tanstack.com/virtual/latest) - Virtualization for handling large datasets
 - **Build Tool**: [Vite](https://vitejs.dev/) - Fast build tool and dev server
 - **Testing**: [Playwright](https://playwright.dev/) - End-to-end testing
 - **Code Quality**: ESLint + Prettier + TypeScript
 
-## 📦 Installation
-
-```bash
-# Clone the repository
-git clone <repository-url>
-cd remix-template-2025
-
-# Install dependencies
-npm install
-```
 
 ## 🛠️ Available Scripts
 
@@ -89,114 +82,120 @@ npm install
   - Runs tests in debug mode with developer tools
   - Allows stepping through test execution
 
-## 🏗️ Project Structure
+## 💡 Solution
 
-```
-├── app/                    # Application source code
-│   ├── components/         # Reusable UI components
-│   │   └── ui/            # shadcn/ui components
-│   ├── lib/               # Utility functions
-│   ├── routes/            # Route components
-│   ├── welcome/           # Welcome page assets
-│   ├── app.css           # Global styles
-│   ├── root.tsx          # Root layout component
-│   └── routes.ts         # Route configuration
-├── build/                 # Production build output
-├── public/               # Static assets
-├── .react-router/        # Generated types and build artifacts
-├── components.json       # shadcn/ui configuration
-├── eslint.config.js     # ESLint configuration
-├── playwright.config.ts  # Playwright test configuration
-├── tailwind.config.ts   # TailwindCSS configuration
-├── tsconfig.json        # TypeScript configuration
-└── vite.config.ts       # Vite configuration
-```
+This implementation demonstrates production-ready patterns and best practices for building scalable React applications with complex data requirements.
 
-## 🎨 UI Components
+### Architecture & Design
 
-This template includes a curated set of UI components built with Radix UI and styled with TailwindCSS:
+**Component-Based Architecture:** The solution follows a modular approach with clear separation of concerns:
+- **Generic Components** (`VirtualizedList`, `SearchBox`) provide reusable building blocks
+- **Feature Components** compose generic components with domain-specific logic
+- **Custom Hooks** (`useInfiniteList`, `useVirtualization`, `useSearchWithDebounce`) encapsulate complex behaviors
+- **Service Layer** handles API communication with runtime validation
 
-- **Button** - Versatile button component with multiple variants
-- **Card** - Container component for content sections
-- **Dropdown Menu** - Accessible dropdown menu component
-- **Input** - Form input component with consistent styling
+**State Management Strategy:**
+- **Server State:** React Query manages data fetching, caching, and synchronization
+- **Client State:** Zustand stores handle UI state with separate stores for Users and Reviewers
+- **Local State:** Component-specific state for UI interactions
 
-Components follow the [shadcn/ui](https://ui.shadcn.com/) pattern and can be found in `app/components/ui/`.
+### Performance Optimizations
 
-## 🔧 Development Tools
+**Virtualization:** Implements `@tanstack/react-virtual` to efficiently render thousands of items by only mounting visible DOM nodes, achieving 60fps scrolling with datasets of any size.
 
-### Code Quality
+**Infinite Scroll:** Smart pagination with:
+- Intersection Observer triggers at 85% scroll depth
+- Debounced scroll restoration preserves position during data updates
+- Background data fetching with React Query's `fetchNextPage`
 
-- **ESLint**: Configured with TypeScript, React, and React Query rules
-- **Prettier**: Consistent code formatting with single quotes preference
-- **TypeScript**: Strict type checking enabled
+**Search Optimization:**
+- 300ms debounce prevents excessive API calls
+- Field-specific filtering (name/email) for precise results
+- Search state persistence across component remounts
 
-### State Management
+**Memoization:** Strategic use of `React.memo` and `useCallback` to prevent unnecessary re-renders, particularly in list items and search components.
 
-- **Zustand**: Lightweight alternative to Redux for client state
-- **TanStack Query**: Server state management with caching and synchronization
+### Best Practices Demonstrated
 
-### Styling
+**Type Safety:** Comprehensive TypeScript coverage with:
+- Zod schemas for runtime validation of all API responses
+- Generic types for reusable components (`VirtualizedList<T>`)
+- Strict type inference without `any` types
 
-- **TailwindCSS v4**: Latest version with improved performance
-- **Class Variance Authority**: Type-safe component variants
-- **Tailwind Merge**: Intelligent class merging utility
+**Error Handling:**
+- Graceful error states with user-friendly messages
+- Retry mechanisms for failed requests
+- Loading states for initial load, search, and pagination
 
-## 🚦 Getting Started
+**Code Reusability:**
+- Single `VirtualizedList` component handles both Users and Reviewers
+- Shared hooks and utilities reduce code duplication
+- Component composition pattern for feature assembly
 
-1. **Install dependencies**:
+**API Validation:** All external data validated at runtime with Zod, ensuring type safety at API boundaries and preventing runtime errors from malformed data.
 
-   ```bash
-   npm install
-   ```
+### Key Implementation Features
 
-2. **Start development server**:
+**Dual-List Solution:** Elegant side-by-side layout with:
+- Independent scroll positions and search states
+- Shared component architecture for consistency
+- Responsive design adapting to screen sizes
 
-   ```bash
-   npm run dev
-   ```
+**Search Architecture:**
+- Dynamic field selection (name vs email)
+- Real-time filtering with debouncing
+- Maintained scroll position during searches
 
-3. **Open your browser** to `http://localhost:5173`
+**Data Management:**
+- Efficient caching strategy with React Query
+- Optimistic updates for smooth UX
+- Proper cleanup and memory management
 
-4. **Start building** your application by editing files in the `app/` directory
+### Technologies Used
+- React Router v7 (Remix) - Modern React framework with SSR support
+- React Query (TanStack Query) - Server state management with caching
+- @tanstack/react-virtual - Virtualization for handling large datasets
+- Zustand - Client state management for search and UI state
+- Zod - Runtime type validation for API responses
+- use-debounce - Search input optimization
+- Shadcn UI + TailwindCSS - Component library and styling
 
-## 📝 Code Style
 
-This project uses:
+## 📝 Challenge Specification
 
-- **Single quotes** for strings and JSX attributes
-- **No semicolons** (handled by Prettier)
-- **2-space indentation**
-- **Trailing commas** where valid
+### General
+In this challenge you will create a React app with a virtualized infinite scroll list.
 
-Run `npm run format` to ensure your code follows the project's style guidelines.
+### Task
+1. Clone the repo.
+2. Create a React app with a build system of your choice (e.g. RSPack, Vite, Webpack, etc.).
+3. Implement an infinite scroll (data is lazy loaded) virtualized list component that will load data from the server. You can use a library or create your own implementation.
+4. Display a list of users using the list component. A user item should include all fields, but id.
+5. Add a search input that will filter the list by name or by email using the API.
+6. Add a second list of reviewers to the app reusing the code you've created. Both lists should appear side by side, have their own search box, and load data from their respective api endpoints.
 
-## 🧪 Testing
+### Finishing the challenge
+1. Don't forget to push your changes to your repo.
+2. Send us a link to your repo.
 
-Tests are written with Playwright and located in the `tests/` directory. The test configuration supports:
+### Technical Info
+#### How to start
+1. Install the dependencies.
+2. Run npm start to start the server on port 3001.
 
-- Cross-browser testing (Chromium, Firefox, WebKit)
-- Mobile viewport testing
-- Screenshot comparisons
-- Network mocking
+#### API
+- Users are available on localhost:3001/users
+- Reviewers are available on localhost:3001/reviewers
+- This mock API uses a basic json-server
 
-## 📚 Learn More
+#### Requirements
+1. User friendly - empty state, loading state, error state, etc...
+2. Visually appealing - use a design system of your choice (e.g. Material UI, Ant Design, etc.) or create your own
+3. Smooth scrolling
+4. Scalable (support extremely high amount of items)
 
-- [React Router Documentation](https://reactrouter.com/start/framework/installation)
-- [TailwindCSS Documentation](https://tailwindcss.com/docs)
-- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
-- [TanStack Query Documentation](https://tanstack.com/query/latest)
-- [Playwright Documentation](https://playwright.dev/docs/intro)
+#### Notes
+- Don't be shy about using AI, as long as you understand the code and can explain it.
+- Feel free to use any libraries you find useful for state management, calling APIs, etc.
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run `npm run lint` and `npm run typecheck`
-5. Run `npm test` to ensure tests pass
-6. Submit a pull request
-
-## 📄 License
-
-This project is private and not licensed for public use.
+**Solved by: Reuven Naor <a href="https://www.linkedin.com/in/reuven-naor/" target="_blank">LinkedIn</a>**
