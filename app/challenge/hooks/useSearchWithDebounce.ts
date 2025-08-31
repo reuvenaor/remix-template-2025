@@ -15,33 +15,33 @@ export function useSearchWithDebounce({
   const [searchValue, setSearchValue] = useState(initialValue)
   const [debouncedValue, setDebouncedValue] = useState(initialValue)
   const [isSearching, setIsSearching] = useState(false)
-  
+
   const debouncedSearch = useDebouncedCallback((value: string) => {
     setDebouncedValue(value)
     setIsSearching(false)
     onSearch?.(value)
   }, delay)
-  
+
   const handleSearch = (value: string) => {
     setSearchValue(value)
     setIsSearching(true)
     debouncedSearch(value)
   }
-  
+
   const clearSearch = () => {
     setSearchValue('')
     setDebouncedValue('')
     setIsSearching(false)
     onSearch?.('')
   }
-  
+
   useEffect(() => {
     if (initialValue !== searchValue) {
       setSearchValue(initialValue)
       setDebouncedValue(initialValue)
     }
-  }, [initialValue])
-  
+  }, [initialValue, searchValue])
+
   return {
     searchValue,
     debouncedValue,

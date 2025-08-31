@@ -4,6 +4,7 @@ import { useInfiniteList } from '~/challenge/hooks/useInfiniteList'
 import type { User } from '~/challenge/schemas/db.schema'
 import { useUsersStore } from '~/challenge/stores/usersStore'
 import { UserItem } from '~/challenge/components/users/user-item/UserItem'
+import { api, type FetchFunction } from '~/challenge/services/api'
 
 export default function UsersList(): React.ReactElement {
   const {
@@ -18,6 +19,7 @@ export default function UsersList(): React.ReactElement {
     search: usersSearch,
     searchField: usersSearchField,
     pageSize: 50,
+    fetchFunction: api.users.list
   })
 
   const renderUserItem = useCallback((item: User) => {

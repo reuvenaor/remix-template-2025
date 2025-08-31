@@ -1,5 +1,10 @@
 import { z } from 'zod'
-import { UserSchema, ReviewerSchema, type User, type Reviewer } from '../schemas/db.schema'
+import {
+  UserSchema,
+  ReviewerSchema,
+  type User,
+  type Reviewer,
+} from '../schemas/db.schema'
 import type { SearchField } from '../components/search-box/SearchBox'
 
 const API_BASE_URL = 'http://localhost:3001'
@@ -17,7 +22,6 @@ interface PaginatedResponse<T> {
   hasNextPage: boolean
   nextPage: number | null
 }
-
 
 function buildUrl(endpoint: string, options: FetchOptions): string {
   const url = new URL(`${API_BASE_URL}/${endpoint}`)
@@ -41,7 +45,7 @@ function buildUrl(endpoint: string, options: FetchOptions): string {
 async function fetchPaginatedData<T>(
   endpoint: string,
   options: FetchOptions,
-  schema: z.ZodSchema<T>
+  schema: z.ZodType<T>,
 ): Promise<PaginatedResponse<T>> {
   const url = buildUrl(endpoint, options)
   const response = await fetch(url)
@@ -50,14 +54,14 @@ async function fetchPaginatedData<T>(
     throw new Error(`API request failed: ${response.statusText}`)
   }
 
-  const data = await response.json()
+  const data = (await response.json()) as unknown as T[]
   const validatedData = z.array(schema).parse(data)
 
   // Since json-server doesn't provide X-Total-Count with _page parameter,
   // we need to fetch total count separately or assume there are more pages
   // when we get a full page of results
-  const currentPage = options.page || 1
-  const limit = options.limit || 50
+  const currentPage = options.page ?? 1
+  const limit = options.limit ?? 50
 
   // If we got a full page of results, assume there might be more
   const hasNextPage = validatedData.length === limit
@@ -74,11 +78,15 @@ async function fetchPaginatedData<T>(
   }
 }
 
-export async function fetchUsers(options: FetchOptions = {}): Promise<PaginatedResponse<User>> {
+export async function fetchUsers(
+  options: FetchOptions = {},
+): Promise<PaginatedResponse<User>> {
   return fetchPaginatedData('users', options, UserSchema)
 }
 
-export async function fetchReviewers(options: FetchOptions = {}): Promise<PaginatedResponse<Reviewer>> {
+export async function fetchReviewers(
+  options: FetchOptions = {},
+): Promise<PaginatedResponse<Reviewer>> {
   return fetchPaginatedData('reviewers', options, ReviewerSchema)
 }
 
@@ -90,3 +98,7 @@ export const api = {
     list: fetchReviewers,
   },
 }
+
+export type FetchFunction<T> = (
+  options?: FetchOptions,
+) => Promise<PaginatedResponse<T>>

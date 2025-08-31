@@ -1,25 +1,26 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
-import type { SearchField } from '../components/search-box/SearchBox'
-import { api } from '../services/api'
+import type { SearchField } from '~/challenge/components/search-box/SearchBox'
+import { type FetchFunction } from '~/challenge/services/api'
+import { useMemo } from 'react'
 
 type DataType = 'users' | 'reviewers'
 
-interface UseInfiniteListOptions {
+interface UseInfiniteListOptions<T> {
   type: DataType
   search?: string
   searchField?: SearchField
   pageSize?: number
+  fetchFunction: FetchFunction<T>
 }
 
-export function useInfiniteList({
+export function useInfiniteList<T>({
   type,
   search,
   searchField = 'firstName',
   pageSize = 50,
-}: UseInfiniteListOptions) {
+  fetchFunction,
+}: UseInfiniteListOptions<T>) {
   const queryKey = [type, search, searchField, pageSize]
-
-  const fetchFunction = type === 'users' ? api.users.list : api.reviewers.list
 
   const query = useInfiniteQuery({
     queryKey,
@@ -36,8 +37,14 @@ export function useInfiniteList({
     initialPageParam: 1,
   })
 
-  const allItems = query.data?.pages.flatMap((page) => page.data) ?? []
-  const totalCount = query.data?.pages[0]?.totalCount ?? 0
+  const allItems = useMemo(
+    () => query.data?.pages.flatMap((page) => page.data) ?? [],
+    [query.data],
+  )
+  const totalCount = useMemo(
+    () => query.data?.pages[0]?.totalCount ?? 0,
+    [query.data],
+  )
 
   return {
     items: allItems,

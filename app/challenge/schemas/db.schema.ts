@@ -1,10 +1,10 @@
 import { z } from 'zod'
 
 export const DefaultItemListSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   firstName: z.string(),
   lastName: z.string(),
-  email: z.string().email(),
+  email: z.email(),
   catchPhrase: z.string(),
   comments: z.string(),
 })
@@ -36,7 +36,7 @@ export const SearchParamsSchema = z.object({
 export type User = z.infer<typeof UserSchema>
 export type Reviewer = z.infer<typeof ReviewerSchema>
 export type PaginationMeta = z.infer<typeof PaginationMetaSchema>
-export type ApiResponse<T> = {
+export interface ApiResponse<T> {
   data: T[]
   meta?: PaginationMeta
 }
