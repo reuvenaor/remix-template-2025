@@ -1,0 +1,21 @@
+# Build outputs
+build/
+dist/
+.react-router/
+
+# Dependencies
+node_modules/
+
+# Cache and temporary files
+.cache/
+*.log
+coverage/
+
+# Generated files
+package-lock.json
+
+# Public assets
+public/
+
+# Database files
+db/*.json
