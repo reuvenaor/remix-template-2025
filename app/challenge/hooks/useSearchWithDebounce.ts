@@ -40,7 +40,8 @@ export function useSearchWithDebounce({
       setSearchValue(initialValue)
       setDebouncedValue(initialValue)
     }
-  }, [initialValue, searchValue])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialValue])
 
   return {
     searchValue,
