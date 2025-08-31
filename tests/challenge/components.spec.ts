@@ -1,3 +1,5 @@
+/* eslint-disable max-lines-per-function */
+
 import { test, expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
 
@@ -128,7 +130,7 @@ test.describe('Challenge Page - Component Rendering', () => {
     expect(reviewerImages).toBeGreaterThan(0)
   })
 
-  test('should display loading state initially', async ({ page }) => {
+  test('should display loading state initially', async () => {
     // Fresh page load to catch loading state
     await page.goto('/')
 
@@ -189,14 +191,16 @@ test.describe('Challenge Page - Component Rendering', () => {
 
     // Check if card has proper styling classes
     const cardContainer = card.locator('> div').first()
-    const hasCardClasses = await cardContainer.evaluate((el) => {
-      const classes = el.className
-      return (
-        classes.includes('rounded') ||
-        classes.includes('border') ||
-        classes.includes('shadow')
-      )
-    })
+    const hasCardClasses = await cardContainer.evaluate(
+      (el: Element): boolean => {
+        const classes = el.classList.toString()
+        return (
+          classes.includes('rounded') ||
+          classes.includes('border') ||
+          classes.includes('shadow')
+        )
+      },
+    )
 
     expect(hasCardClasses).toBeTruthy()
   })

@@ -1,3 +1,5 @@
+/* eslint-disable max-lines-per-function */
+
 import { test, expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
 
@@ -80,9 +82,6 @@ test.describe('Challenge Page - Performance & Stress Tests', () => {
         await page.waitForTimeout(1500)
       }
 
-      // Measure frame rate during scroll (using console timing)
-      const frameTimings: number[] = []
-
       await page.evaluate(() => {
         let lastTime = performance.now()
         const timings: number[] = []
@@ -95,7 +94,7 @@ test.describe('Challenge Page - Performance & Stress Tests', () => {
           if (timings.length < 60) {
             requestAnimationFrame(measureFrame)
           } else {
-            ;(window as any).frameTimings = timings
+            ; (window as { frameTimings?: number[] }).frameTimings = timings
           }
         }
 
@@ -110,13 +109,13 @@ test.describe('Challenge Page - Performance & Stress Tests', () => {
       await page.waitForTimeout(2000)
 
       // Get frame timings
-      const timings = await page.evaluate(
-        () => (window as any).frameTimings || [],
-      )
+      const timings: number[] = await page.evaluate(() => {
+        // Use nullish coalescing to avoid unsafe fallback
+        return (window as { frameTimings?: number[] }).frameTimings ?? []
+      })
 
       if (timings.length > 0) {
-        const avgFrameTime =
-          timings.reduce((a: number, b: number) => a + b, 0) / timings.length
+        const avgFrameTime = timings.reduce((a, b) => a + b, 0) / timings.length
         // Average frame time should be under 32ms (>30 FPS)
         expect(avgFrameTime).toBeLessThan(32)
       }
@@ -352,7 +351,7 @@ test.describe('Challenge Page - Performance & Stress Tests', () => {
         el.scrollTo({ top: 1000, behavior: 'smooth' })
 
         setTimeout(() => {
-          ;(window as any).scrollMetrics = {
+          ; (window as any).scrollMetrics = {
             count: scrollCount,
             duration: performance.now() - startTime,
           }
