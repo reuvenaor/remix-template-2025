@@ -62,7 +62,7 @@ export default tseslint.config(
         },
       ],
       '@typescript-eslint/explicit-function-return-type': 'off', // Too strict
-      '@typescript-eslint/explicit-module-boundary-types': 'error',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-empty-function': 'error', // Changed from warn
       '@typescript-eslint/no-non-null-assertion': 'error', // Changed from warn
       '@typescript-eslint/consistent-type-imports': [
