@@ -46,16 +46,14 @@ test.describe('Challenge Page - Component Rendering', () => {
     await expect(searchBox).toBeVisible()
     await expect(searchBox).toBeEnabled()
 
-    // Check sort dropdown
-    const sortButton = usersSection.locator('button:has-text("First Name")')
-    await expect(sortButton).toBeVisible()
+    // Check search field selector dropdown
+    const fieldButton = usersSection.locator('button:has-text("First Name")')
+    await expect(fieldButton).toBeVisible()
 
     // Wait for data to load and check list container
     await page.waitForTimeout(2000) // Allow time for data fetch
-    // Check for either overflow container or list items
-    const usersList = usersSection
-      .locator('.overflow-auto, [style*="overflow"], [style*="transform"]')
-      .first()
+    // Check for the specific scroll container
+    const usersList = usersSection.locator('#users-scroll-container').first()
     await expect(usersList).toBeVisible()
   })
 
@@ -77,15 +75,17 @@ test.describe('Challenge Page - Component Rendering', () => {
     await expect(searchBox).toBeVisible()
     await expect(searchBox).toBeEnabled()
 
-    // Check sort dropdown
-    const sortButton = reviewersSection.locator('button:has-text("First Name")')
-    await expect(sortButton).toBeVisible()
+    // Check search field selector dropdown
+    const fieldButton = reviewersSection.locator(
+      'button:has-text("First Name")',
+    )
+    await expect(fieldButton).toBeVisible()
 
     // Wait for data and check list container
     await page.waitForTimeout(2000)
-    // Check for either overflow container or list items
+    // Check for the specific scroll container
     const reviewersList = reviewersSection
-      .locator('.overflow-auto, [style*="overflow"], [style*="transform"]')
+      .locator('#reviewers-scroll-container')
       .first()
     await expect(reviewersList).toBeVisible()
   })

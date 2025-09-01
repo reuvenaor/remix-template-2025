@@ -1,6 +1,4 @@
 /* eslint-disable max-lines-per-function */
-/* eslint-disable @typescript-eslint/no-unnecessary-condition */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 import { test, expect } from '@playwright/test'
 import type { Page, Request } from '@playwright/test'
@@ -111,17 +109,16 @@ test.describe('Challenge Page - API Integration Tests', () => {
 
       expect(searchRequest).not.toBeNull()
 
-      if (searchRequest) {
-        const url = new URL((searchRequest as Request).url())
-        expect(url.searchParams.get('firstName')).toBe('Zelma')
-        expect(url.searchParams.get('_page')).toBe('1')
-      }
+      // The check above already ensures searchRequest is not null
+      const url = new URL((searchRequest as unknown as Request).url())
+      expect(url.searchParams.get('firstName')).toBe('Zelma')
+      expect(url.searchParams.get('_page')).toBe('1')
     })
 
     test('should handle pagination correctly', async () => {
       const usersSection = page.locator('.grid > div').first()
       const scrollContainer = usersSection
-        .locator('[style*="overflow"]')
+        .locator('#users-scroll-container')
         .first()
 
       let secondPageRequest: Request | null = null
@@ -145,11 +142,10 @@ test.describe('Challenge Page - API Integration Tests', () => {
 
       expect(secondPageRequest).not.toBeNull()
 
-      if (secondPageRequest) {
-        const url = new URL((secondPageRequest as Request).url())
-        expect(url.searchParams.get('_page')).toBe('2')
-        expect(url.searchParams.get('_limit')).toBe('50')
-      }
+      // The check above already ensures secondPageRequest is not null
+      const url = new URL((secondPageRequest as unknown as Request).url())
+      expect(url.searchParams.get('_page')).toBe('2')
+      expect(url.searchParams.get('_limit')).toBe('50')
     })
   })
 
@@ -161,7 +157,7 @@ test.describe('Challenge Page - API Integration Tests', () => {
       page.on('response', async (response) => {
         if (response.url().includes('/users?_page=1')) {
           try {
-            userData = await response.json()
+            userData = (await response.json()) as UserData[]
           } catch {
             // Ignore parsing errors
           }
@@ -173,19 +169,18 @@ test.describe('Challenge Page - API Integration Tests', () => {
 
       expect(userData).not.toBeNull()
 
-      if (userData && Array.isArray(userData)) {
-        const users = userData as UserData[]
-        expect(users.length).toBeGreaterThan(0)
+      // The check above already ensures userData is not null
+      const users = userData as unknown as UserData[]
+      expect(users.length).toBeGreaterThan(0)
 
-        // Check first user structure
-        const [firstUser] = users
-        expect(firstUser).toHaveProperty('id')
-        expect(firstUser).toHaveProperty('firstName')
-        expect(firstUser).toHaveProperty('lastName')
-        expect(firstUser).toHaveProperty('email')
-        expect(firstUser).toHaveProperty('catchPhrase')
-        expect(firstUser).toHaveProperty('comments')
-      }
+      // Check first user structure
+      const [firstUser] = users
+      expect(firstUser).toHaveProperty('id')
+      expect(firstUser).toHaveProperty('firstName')
+      expect(firstUser).toHaveProperty('lastName')
+      expect(firstUser).toHaveProperty('email')
+      expect(firstUser).toHaveProperty('catchPhrase')
+      expect(firstUser).toHaveProperty('comments')
     })
 
     test('should receive valid reviewer data structure', async () => {
@@ -195,7 +190,7 @@ test.describe('Challenge Page - API Integration Tests', () => {
       page.on('response', async (response) => {
         if (response.url().includes('/reviewers?_page=1')) {
           try {
-            reviewerData = await response.json()
+            reviewerData = (await response.json()) as ReviewerData[]
           } catch {
             // Ignore parsing errors
           }
@@ -207,19 +202,18 @@ test.describe('Challenge Page - API Integration Tests', () => {
 
       expect(reviewerData).not.toBeNull()
 
-      if (reviewerData && Array.isArray(reviewerData)) {
-        const reviewers = reviewerData as ReviewerData[]
-        expect(reviewers.length).toBeGreaterThan(0)
+      // The check above already ensures reviewerData is not null
+      const reviewers = reviewerData as unknown as ReviewerData[]
+      expect(reviewers.length).toBeGreaterThan(0)
 
-        // Check first reviewer structure
-        const [firstReviewer] = reviewers
-        expect(firstReviewer).toHaveProperty('id')
-        expect(firstReviewer).toHaveProperty('firstName')
-        expect(firstReviewer).toHaveProperty('lastName')
-        expect(firstReviewer).toHaveProperty('email')
-        expect(firstReviewer).toHaveProperty('catchPhrase')
-        expect(firstReviewer).toHaveProperty('comments')
-      }
+      // Check first reviewer structure
+      const [firstReviewer] = reviewers
+      expect(firstReviewer).toHaveProperty('id')
+      expect(firstReviewer).toHaveProperty('firstName')
+      expect(firstReviewer).toHaveProperty('lastName')
+      expect(firstReviewer).toHaveProperty('email')
+      expect(firstReviewer).toHaveProperty('catchPhrase')
+      expect(firstReviewer).toHaveProperty('comments')
     })
 
     test('should display data from API correctly', async () => {
@@ -229,7 +223,7 @@ test.describe('Challenge Page - API Integration Tests', () => {
       page.on('response', async (response) => {
         if (response.url().includes('/users?_page=1')) {
           try {
-            userData = await response.json()
+            userData = (await response.json()) as UserData[]
           } catch {
             // Ignore
           }
@@ -511,16 +505,14 @@ test.describe('Challenge Page - API Integration Tests', () => {
 
       expect(capturedHeaders).not.toBeNull()
 
-      if (capturedHeaders) {
-        // Should have appropriate headers
-        const headers = capturedHeaders as Record<string, string>
-        // Headers should exist
-        expect(headers).toBeDefined()
-        // Check common headers that should be present
-        // Note: accept header may not always be present in fetch requests
-        // The important thing is that the request works correctly
-        expect(Object.keys(headers).length).toBeGreaterThan(0)
-      }
+      // The check above already ensures capturedHeaders is not null
+      const headers = capturedHeaders as unknown as Record<string, string>
+      // Headers should exist
+      expect(headers).toBeDefined()
+      // Check common headers that should be present
+      // Note: accept header may not always be present in fetch requests
+      // The important thing is that the request works correctly
+      expect(Object.keys(headers).length).toBeGreaterThan(0)
     })
   })
 })

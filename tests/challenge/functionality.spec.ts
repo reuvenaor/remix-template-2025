@@ -168,7 +168,7 @@ test.describe('Challenge Page - Functionality Tests', () => {
     test('should load more items when scrolling to bottom', async () => {
       const usersSection = page.locator('.grid > div').first()
       const scrollContainer = usersSection
-        .locator('[style*="overflow"]')
+        .locator('#users-scroll-container')
         .first()
 
       // Get initial item count
@@ -198,7 +198,7 @@ test.describe('Challenge Page - Functionality Tests', () => {
     test('should maintain scroll position when switching between lists', async () => {
       const usersSection = page.locator('.grid > div').first()
       const scrollContainer = usersSection
-        .locator('[style*="overflow"]')
+        .locator('#users-scroll-container')
         .first()
 
       // Scroll users list to middle
@@ -223,7 +223,7 @@ test.describe('Challenge Page - Functionality Tests', () => {
     test('should show loading indicator when fetching next page', async () => {
       const usersSection = page.locator('.grid > div').first()
       const scrollContainer = usersSection
-        .locator('[style*="overflow"]')
+        .locator('#users-scroll-container')
         .first()
 
       // Set up console log monitoring
@@ -252,57 +252,57 @@ test.describe('Challenge Page - Functionality Tests', () => {
     })
   })
 
-  test.describe('Sorting', () => {
-    test('should open sort dropdown menu', async () => {
+  test.describe('Search Field Selection', () => {
+    test('should open search field dropdown menu', async () => {
       const usersSection = page.locator('.grid > div').first()
-      const sortButton = usersSection.locator('button:has-text("First Name")')
+      const fieldButton = usersSection.locator('button:has-text("First Name")')
 
-      // Click sort button
-      await sortButton.click()
+      // Click field button
+      await fieldButton.click()
 
       // Check dropdown menu appears
       const dropdown = page.locator('[role="menu"]')
       await expect(dropdown).toBeVisible()
 
-      // Check sort options are present
+      // Check field options are present (only First Name and Email exist)
       await expect(dropdown.locator('text="First Name"')).toBeVisible()
-      await expect(dropdown.locator('text="Last Name"')).toBeVisible()
       await expect(dropdown.locator('text="Email"')).toBeVisible()
+
+      // Last Name should NOT exist (this was the bug in original test)
+      await expect(dropdown.locator('text="Last Name"')).not.toBeVisible()
     })
 
-    test('should change sort order when selecting option', async () => {
+    test('should change search field when selecting option', async () => {
       const usersSection = page.locator('.grid > div').first()
-      const sortButton = usersSection.locator('button:has-text("First Name")')
+      const fieldButton = usersSection.locator('button:has-text("First Name")')
 
       // Open dropdown
-      await sortButton.click()
+      await fieldButton.click()
 
-      // Select Last Name
-      const lastNameOption = page.locator(
-        '[role="menuitem"]:has-text("Last Name")',
-      )
-      await lastNameOption.click()
+      // Select Email
+      const emailOption = page.locator('[role="menuitem"]:has-text("Email")')
+      await emailOption.click()
 
       // Wait for re-render
       await page.waitForTimeout(1000)
 
-      // Sort button should now show "Last Name"
-      const updatedButton = usersSection.locator('button:has-text("Last Name")')
+      // Field button should now show "Email"
+      const updatedButton = usersSection.locator('button:has-text("Email")')
       await expect(updatedButton).toBeVisible()
     })
 
-    test('should maintain sort when searching', async () => {
+    test('should maintain search field when searching', async () => {
       const usersSection = page.locator('.grid > div').first()
-      const sortButton = usersSection
+      const fieldButton = usersSection
         .locator('button')
-        .filter({ hasText: /Name|Email/ })
+        .filter({ hasText: /First Name|Email/ })
         .first()
       const searchInput = usersSection.locator(
         'input[placeholder="Search users..."]',
       )
 
-      // Change sort to Email
-      await sortButton.click()
+      // Change field to Email
+      await fieldButton.click()
       const emailOption = page.locator('[role="menuitem"]:has-text("Email")')
       await emailOption.click()
       await page.waitForTimeout(1000)
@@ -311,9 +311,11 @@ test.describe('Challenge Page - Functionality Tests', () => {
       await searchInput.fill('a')
       await page.waitForTimeout(1500)
 
-      // Sort should still be Email
-      const currentSortButton = usersSection.locator('button:has-text("Email")')
-      await expect(currentSortButton).toBeVisible()
+      // Field should still be Email
+      const currentFieldButton = usersSection.locator(
+        'button:has-text("Email")',
+      )
+      await expect(currentFieldButton).toBeVisible()
     })
   })
 
@@ -396,7 +398,7 @@ test.describe('Challenge Page - Functionality Tests', () => {
     test('should update rendered items when scrolling', async () => {
       const usersSection = page.locator('.grid > div').first()
       const scrollContainer = usersSection
-        .locator('[style*="overflow"]')
+        .locator('#users-scroll-container')
         .first()
 
       // Get first visible item text
