@@ -19,7 +19,7 @@ export default function ReviewersSearch(): React.ReactElement {
     onSearch: setReviewersSearch,
   })
 
-  const onClear = () => useCallback(() => {
+  const onClear = useCallback(() => {
     reviewersSearchDebounced.clearSearch()
     resetSearch()
   }, [reviewersSearchDebounced, resetSearch])

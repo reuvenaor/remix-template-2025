@@ -18,7 +18,7 @@ export default function UsersSearch(): React.ReactElement {
     onSearch: setUsersSearch,
   })
 
-  const onClear = () => useCallback(() => {
+  const onClear = useCallback(() => {
     usersSearchDebounced.clearSearch()
     resetSearch()
   }, [usersSearchDebounced, resetSearch])
